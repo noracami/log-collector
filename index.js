@@ -39,10 +39,13 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
 
-// GET / — version info
-app.get("/", (_req, res) => {
+// GET /version — version info
+app.get("/version", (_req, res) => {
   res.json({ commit: COMMIT });
 });
+
+// GET / — query UI
+app.use(express.static("public"));
 
 // POST /logs — receive batched log entries
 app.post("/logs", async (req, res) => {

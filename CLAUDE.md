@@ -23,6 +23,11 @@ npm start        # run the server (requires MongoDB)
 |-------------|------------------------------------------|----------------------|
 | `MONGO_URI` | `mongodb://localhost:27017/log-collector` | MongoDB connection string |
 | `PORT`      | `3000`                                   | Server listen port   |
+| `DISCORD_CLIENT_ID` | — | Discord Application Client ID |
+| `DISCORD_CLIENT_SECRET` | — | Discord Application Client Secret |
+| `DISCORD_REDIRECT_URI` | — | OAuth callback URL (e.g. `https://example.com/auth/discord/callback`) |
+| `ALLOWED_DISCORD_IDS` | — | Comma-separated Discord User IDs allowed to view log UI |
+| `SESSION_SECRET` | `dev-secret-change-me` | Secret for express-session cookie signing |
 
 ## Architecture
 
@@ -35,7 +40,10 @@ Client (browser)  —POST /logs→  Express server  —insertMany→  MongoDB (l
 - **GET /logs** — query params: `date`, `level`, `tag`, `sid`, `q` (regex on msg/ctx)
 - Storage: MongoDB collection `logs`, one document per log entry
 - `receivedAt` stored as ISO 8601 string with `+08:00` offset
-- CORS: allow `*` (internal debug tool, no auth)
+- **GET /** — protected by Discord OAuth; only users in `ALLOWED_DISCORD_IDS` can view the log viewer UI
+- API endpoints (`POST /logs`, `GET /logs`, `GET /version`) remain public (no auth)
+- CORS: allow `*` (internal debug tool)
+- Sessions stored in MongoDB via `connect-mongo`
 - Server errors return 200 (not 5xx) to prevent client retry floods
 
 ## Key Design Constraints

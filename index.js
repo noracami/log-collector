@@ -270,7 +270,7 @@ app.get("/logs", async (req, res) => {
       ];
     }
 
-    const results = await logsCollection.find(filter).sort({ receivedAt: 1 }).toArray();
+    const results = await logsCollection.find(filter).sort({ receivedAt: -1 }).toArray();
 
     // Remove MongoDB _id from response
     const cleaned = results.map(({ _id, ...rest }) => rest);

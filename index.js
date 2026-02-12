@@ -65,8 +65,9 @@ app.get("/logs", async (req, res) => {
     // Date filter: default to today (UTC+8)
     const dateStr = date || todayDateStringUTC8();
     const dayStart = `${dateStr}T00:00:00.000+08:00`;
-    const nextDay = new Date(new Date(`${dateStr}T00:00:00+08:00`).getTime() + 24 * 60 * 60 * 1000);
-    const nextDayStr = nextDay.toISOString().slice(0, 10);
+    const [year, month, day] = dateStr.split("-").map(Number);
+    const nextDate = new Date(Date.UTC(year, month - 1, day + 1));
+    const nextDayStr = nextDate.toISOString().slice(0, 10);
     const dayEnd = `${nextDayStr}T00:00:00.000+08:00`;
     filter.receivedAt = { $gte: dayStart, $lt: dayEnd };
 

@@ -1,6 +1,10 @@
+import { readFileSync } from "node:fs";
 import express from "express";
 import cors from "cors";
 import { MongoClient } from "mongodb";
+
+const COMMIT = process.env.ZEABUR_GIT_COMMIT_SHA?.slice(0, 7)
+  || (() => { try { return readFileSync(".commit", "utf8").trim(); } catch { return "dev"; } })();
 
 const MONGO_URI =
   process.env.MONGO_URI || "mongodb://localhost:27017/log-collector";
@@ -34,6 +38,11 @@ const logsCollection = db.collection("logs");
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
+
+// GET / — version info
+app.get("/", (_req, res) => {
+  res.json({ commit: COMMIT });
+});
 
 // POST /logs — receive batched log entries
 app.post("/logs", async (req, res) => {
